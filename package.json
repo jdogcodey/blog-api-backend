@@ -1,0 +1,21 @@
+{
+  "name": "blog-api-backend",
+  "version": "1.0.0",
+  "description": "Following along with The Odin Project, this is the Blog API. In this project the aim is to make a backend Express server which can access a database and output to two separate front end applications for authentication etc.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jdogcodey/blog-api-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jdogcodey/blog-api-backend/issues"
+  },
+  "homepage": "https://github.com/jdogcodey/blog-api-backend#readme",
+  "type": "module"
+}
