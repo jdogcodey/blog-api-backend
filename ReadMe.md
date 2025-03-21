@@ -10,11 +10,11 @@ Rough ToDo:
 
   Plan the Prisma models (done)
 
-  Set up the directory and git
+  Set up the directory and git (done)
 
-  Install the relevant dependencies and establish the file structure
+  Install the relevant dependencies and establish the file structure (done)
 
-  Set up prisma models, separately the psql db and connect the two
+  Set up prisma models, separately the psql db and connect the two (done)
 
   Test storing data to the db
 
