@@ -9,3 +9,5 @@ const controller = {
     res.json({ message: "all good!" });
   },
 };
+
+export default controller;
