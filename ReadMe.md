@@ -18,13 +18,13 @@ Rough ToDo:
 
   Test storing data to the db
 
-  Set up express app
+  Set up express app (done)
 
-  Add Router and set up initial route
+  Add Router and set up initial route (done)
 
-  Add Controller and add initial controller
+  Add Controller and add initial controller (done)
 
-  Test app running and set up correctly
+  Test app running and set up correctly (done)
 
   / route shows homepage
 

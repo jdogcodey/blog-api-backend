@@ -2,7 +2,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import express from "express";
 import { PrismaClient } from "@prisma/client";
-import passport from "passport";
+// import passport from "passport";
 import "dotenv/config";
 import routes from "./routes/indexRouter.js";
 import "./config/passport.js";
@@ -29,7 +29,7 @@ app.use(
 app.use(express.static(path.join(__dirname, "public")));
 
 // Initialise passport for authentication
-app.use(passport.initialize());
+// app.use(passport.initialize());
 
 // Use the router
 app.use(routes);
