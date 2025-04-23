@@ -1,49 +1,58 @@
-// import passport from "passport";
-// import prisma from "./prisma-client.js";
-// import JwtStrategy from "passport-jwt";
-// import { LocalStrategy } from "passport-local";
+import passport from "passport";
+import prisma from "./prisma-client.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import { LocalStrategy } from "passport-local";
+import "dotenv";
 
-// const verifyCallback = async (username, password, done) => {
-//   try {
-//     const user = await prisma.user.findUnique({
-//       where: {
-//         username: username,
-//       },
-//     });
-//     if (!user) {
-//       return done(null, false, { message: "Incorrect username" });
-//     }
+// Local Strategy for Logging in
+const verifyCallback = async (username, password, done) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        username: username,
+      },
+    });
+    if (!user) {
+      return done(null, false, { message: "Incorrect username" });
+    }
 
-//     const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(password, user.password);
 
-//     if (!match) {
-//       return done(null, false, { message: "Incorrect password" });
-//     }
-//     return done(null, user);
-//   } catch (err) {
-//     return done(err);
-//   }
-// };
+    if (!match) {
+      return done(null, false, { message: "Incorrect password" });
+    }
+    return done(null, user);
+  } catch (err) {
+    return done(err);
+  }
+};
 
-// const strategy = new JwtStrategy(verifyCallback);
-// passport.use(strategy);
+const localStrategy = new LocalStrategy(verifyCallback);
+passport.use("local", localStrategy);
 
-// passport.serializeUser((user, done) => {
-//   done(null, user.id);
-// });
+// JWT Strategy for verifying tokens on protected routes
+const jwtOptions = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.SECRET,
+};
 
-// passport.deserializeUser(async (id, done) => {
-//   try {
-//     const user = await prisma.user.findUnique({
-//       where: {
-//         id: Number(id),
-//       },
-//     });
-//     if (!user) {
-//       return done(new Error("User not found"), null);
-//     }
-//     done(null, user);
-//   } catch (err) {
-//     done(err);
-//   }
-// });
+const jwtVerify = async (payload, done) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: payload.userId },
+    });
+
+    if (!user) {
+      return done(null, false);
+    }
+
+    return done(null, user);
+  } catch (err) {
+    return done(err, false);
+  }
+};
+
+const jwtStrategy = new JwtStrategy(jwtOptions, jwtVerify);
+passport.use("jwt", jwtStrategy);

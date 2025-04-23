@@ -26,7 +26,7 @@ Rough ToDo:
 
   Test app running and set up correctly (done)
 
-  / route shows homepage
+  / route shows homepage (done)
 
   Set up JWT authentication
 
