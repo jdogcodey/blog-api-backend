@@ -28,15 +28,15 @@ Rough ToDo:
 
   / route shows homepage (done)
 
-  Set up JWT authentication
+  Set up JWT authentication (done)
 
-  Create /user/new GET
+  Create /user/new GET (as /signup)
 
-  /user/new POST
+  /user/new POST (done)
 
-  /log-in GET
+  /log-in GET (done)
 
-  /log-in POST
+  /log-in POST (done)
 
   /user/:profileID: GET
 
