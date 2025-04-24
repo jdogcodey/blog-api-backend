@@ -9,53 +9,54 @@ const controller = {
   login: (req, res, next) => {
     passport.authenticate("local", { session: false }, (err, user, info) => {
       if (err || !user) {
-        return res.status(401).json({ 
+        return res.status(401).json({
           success: false,
           message: "Invalid credentials",
           errors: { err },
-      });
+        });
       }
 
       const payload = { userId: user.id };
       const token = jwt.sign(payload, process.env.SECRET, {
         expiresIn: "1h",
       });
-      res.json({ 
-        success: true, 
+      res.json({
+        success: true,
         message: "Login successful",
         data: {
           token,
           user: {
             username: user.username,
             email: user.email,
-          }
-           }});
+          },
+        },
+      });
     })(req, res, next);
   },
   protected: (req, res, next) => {
     passport.authenticate("jwt", { session: false }, (err, user, info) => {
-       if (err || !user) {
-        return res.status(401).json({ 
+      if (err || !user) {
+        return res.status(401).json({
           success: false,
           message: "Invalid credentials",
           errors: { err },
-      });
+        });
       }
       req.user = user;
       next();
     })(req, res, next);
   },
   homepage: (req, res, next) => {
-    res.json({ 
-        success: true, 
-        message: "Welcome!"
-      });
+    res.json({
+      success: true,
+      message: "Welcome!",
+    });
   },
   signUpPage: (req, res, next) => {
-    res.json({ 
-        success: true, 
-        message: "Sign up"
-      });
+    res.json({
+      success: true,
+      message: "Sign up",
+    });
   },
   signUpValidation: (req, res) => [
     body("first_name")
@@ -108,10 +109,10 @@ const controller = {
         success: false,
         message: "Please fix the highlighted field",
         errors: { err },
-      })
+      });
     }
 
-    const { username, email, password } = req.body;
+    const { first_name, last_name, username, email, password } = req.body;
 
     try {
       const checkForDuplicate = await prisma.user.findFirst({
@@ -121,20 +122,48 @@ const controller = {
       });
 
       if (checkForDuplicate) {
-        let duplicateField = checkForDuplicate.email === req.body.email ? "email" : "username";
+        let duplicateField =
+          checkForDuplicate.email === req.body.email ? "email" : "username";
         return res.status(400).json({
           success: false,
           message: `An account already exists with those details`,
           errors: {
-            duplicateField: `${duplicateField} already in use`
+            duplicateField: `${duplicateField} already in use`,
           },
         });
+      }
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
+      const newUser = await prisma.user.create({
+        data: {
+          first_name: first_name,
+          last_name: last_name,
+          username: username,
+          email: email,
+          password: hashedPassword,
+        },
+      });
 
+      const token = jwt.sign({ userId: newUser.id }, process.env.SECRET, {
+        expiresIn: "1h",
+      });
+
+      res.status(201).json({
+        success: true,
+        message: "Sign Up successful",
+        data: {
+          token: token,
+        },
+      });
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: "Server says no",
+        errors: { err },
+      });
     }
-  }
+  },
 };
 
 export default controller;
