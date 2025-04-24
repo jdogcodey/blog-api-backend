@@ -1,4 +1,4 @@
-import { jwt, JsonWebTokenError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import passport from "passport";
 import bcrypt from "bcryptjs";
 import { body, validationResult, check } from "express-validator";
@@ -6,13 +6,13 @@ import "dotenv";
 import prisma from "../config/prisma-client.js";
 
 const controller = {
-  login: (req, res, next) => {
+  loginPost: (req, res, next) => {
     passport.authenticate("local", { session: false }, (err, user, info) => {
       if (err || !user) {
         return res.status(401).json({
           success: false,
           message: "Invalid credentials",
-          errors: { err },
+          errors: err || info,
         });
       }
 

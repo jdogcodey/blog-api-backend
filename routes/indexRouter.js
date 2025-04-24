@@ -8,7 +8,7 @@ router.get("/", controller.homepage);
 
 router.get("/login", controller.loginPage);
 
-router.post("/login", controller.login);
+router.post("/login", controller.loginPost);
 
 router.get("/signup", controller.signupPage);
 

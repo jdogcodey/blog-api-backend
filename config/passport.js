@@ -1,9 +1,8 @@
 import passport from "passport";
 import prisma from "./prisma-client.js";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
-import { LocalStrategy } from "passport-local";
+import { Strategy as LocalStrategy } from "passport-local";
 import "dotenv";
 
 // Local Strategy for Logging in
