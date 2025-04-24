@@ -52,13 +52,19 @@ const controller = {
       message: "Welcome!",
     });
   },
-  signUpPage: (req, res, next) => {
+  loginPage: (req, res, next) => {
+    res.json({
+      success: true,
+      message: "Log In",
+    });
+  },
+  signupPage: (req, res, next) => {
     res.json({
       success: true,
       message: "Sign up",
     });
   },
-  signUpValidation: (req, res) => [
+  signupValidation: (req, res) => [
     body("first_name")
       .trim()
       .notEmpty()
@@ -102,7 +108,7 @@ const controller = {
       return true;
     }),
   ],
-  signUpPost: async (req, res, next) => {
+  signupPost: async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({

@@ -6,10 +6,12 @@ const router = express.Router();
 
 router.get("/", controller.homepage);
 
+router.get("/login", controller.loginPage);
+
 router.post("/login", controller.login);
 
-router.get("/signup", controller.signUpPage);
+router.get("/signup", controller.signupPage);
 
-router.post("signup", controller.signUpValidation, controller.signUpPost);
+router.post("/user/new", controller.signupValidation, controller.signupPost);
 
 export default router;
