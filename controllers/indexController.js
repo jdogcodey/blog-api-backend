@@ -46,6 +46,12 @@ const controller = {
       next();
     })(req, res, next);
   },
+  protectedPage: (req, res, next) => {
+    res.json({
+      success: true,
+      message: "Logged In",
+    });
+  },
   homepage: (req, res, next) => {
     res.json({
       success: true,

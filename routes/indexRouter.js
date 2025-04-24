@@ -14,4 +14,6 @@ router.get("/signup", controller.signupPage);
 
 router.post("/user/new", controller.signupValidation(), controller.signupPost);
 
+router.get("/protected", controller.protected, controller.protectedPage);
+
 export default router;
