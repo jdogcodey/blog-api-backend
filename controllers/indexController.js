@@ -64,7 +64,7 @@ const controller = {
       message: "Sign up",
     });
   },
-  signupValidation: (req, res) => [
+  signupValidation: () => [
     body("first_name")
       .trim()
       .notEmpty()
@@ -109,12 +109,13 @@ const controller = {
     }),
   ],
   signupPost: async (req, res, next) => {
+    console.log("test");
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
         message: "Please fix the highlighted field",
-        errors: { err },
+        errors: errors.array(),
       });
     }
 

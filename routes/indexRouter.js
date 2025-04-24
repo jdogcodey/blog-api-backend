@@ -12,6 +12,6 @@ router.post("/login", controller.loginPost);
 
 router.get("/signup", controller.signupPage);
 
-router.post("/user/new", controller.signupValidation, controller.signupPost);
+router.post("/user/new", controller.signupValidation(), controller.signupPost);
 
 export default router;
