@@ -110,22 +110,25 @@ const controller = {
         errors: { err },
       })
     }
-    
+
     const { username, email, password } = req.body;
 
     try {
-      const existingUser = await prisma.user.findUnique({
-        where: { username },
+      const checkForDuplicate = await prisma.user.findFirst({
+        where: {
+          OR: [{ email: email }, { username: username }],
+        },
       });
-      if (existingUser) {
-        return res.status(400).json({ 
+
+      if (checkForDuplicate) {
+        let duplicateField = checkForDuplicate.email === req.body.email ? "email" : "username";
+        return res.status(400).json({
           success: false,
-          message: "Invalid Sign Up",
+          message: `An account already exists with those details`,
           errors: {
-            username: "Username already taken"
+            duplicateField: `${duplicateField} already in use`
           },
         });
-      }
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
