@@ -33,25 +33,36 @@ const controller = {
       });
     })(req, res, next);
   },
-  protected: (req, res, next) => {
+  jwtAuth: (req, res, next) => {
+    // Checks that the user is signed in - anyone logged in will be let past.
     passport.authenticate("jwt", { session: false }, (err, user, info) => {
       if (err || !user) {
         return res.status(401).json({
           success: false,
-          message: "Invalid credentials",
-          errors: { err },
+          message: "Not logged in",
+          errors: err || info,
         });
       }
       req.user = user;
       next();
     })(req, res, next);
   },
-  protectedPage: (req, res, next) => {
-    res.json({
-      success: true,
-      message: "Logged In",
-      user: req.user,
-    });
+  selfPermission: (req, res, next) => {
+    // Checks that the signed in user is the same as the id of the page they are trying to access - Only if they match will they be allowed through.
+    if (req.user.id !== parseInt(req.params.id, 10)) {
+      return res.status(403).json({
+        success: false,
+        message: "Access Denied",
+      });
+    }
+    next();
+  },
+  getUser: (req, res, next) => {
+    // Authenticates the user and passes that to the next middleware - This is not a security measure!
+    passport.authenticate("jwt", { session: false }, (err, user, info) => {
+      req.user = user || null;
+      next();
+    })(req, res, next);
   },
   homepage: (req, res, next) => {
     res.json({
@@ -179,7 +190,38 @@ const controller = {
       });
     }
   },
-  userPage: (req, res, next) => {},
+  userPage: async (req, res, next) => {
+    const reqProfile = parseInt(req.params.id, 10);
+    const currentUser = parseInt(req.user.id, 10) || null;
+
+    const blogPosts = prisma.post.findMany({
+      where: {
+        userId: reqProfile,
+      },
+    });
+
+    if (reqProfile === currentUser) {
+      return res.status(200).json({
+        success: true,
+        message: `${req.params.id} Profile - Logged in as self - Edit privilege allowed`,
+        data: {
+          user: req.user,
+          editPrivilege: true,
+          blogPosts: blogPosts,
+        },
+      });
+    } else if (currentUser) {
+      return res.status(200).json({
+        success: true,
+        message: `${req.params.id} Profile - Logged in as ${req.user.username}`,
+        data: {
+          user: req.user,
+          editPrivilege: false,
+          blogPosts: blogPosts,
+        },
+      });
+    }
+  },
 };
 
 export default controller;
