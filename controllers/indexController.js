@@ -282,6 +282,7 @@ const controller = {
   posts: async (req, res, next) => {
     try {
       if (req.user) {
+        // If a User exists then find their blog posts and send back
         const blogPosts = await prisma.post.findMany({
           where: {
             userId: parseInt(req.user.id, 10),
@@ -302,9 +303,11 @@ const controller = {
           },
         });
       } else {
+        // If not logged in then redirect to login
         res.redirect("/login");
       }
     } catch (err) {
+      // Error handler
       res.status(500).json({
         success: false,
         message: "Server says no",
