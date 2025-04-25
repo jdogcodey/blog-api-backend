@@ -7,7 +7,9 @@ import prisma from "../config/prisma-client.js";
 
 const controller = {
   loginPost: (req, res, next) => {
+    // Takes in the username and password submitted, authenticates them, and provides the user with a jwt
     passport.authenticate("local", { session: false }, (err, user, info) => {
+      // Handles an error or no user
       if (err || !user) {
         return res.status(401).json({
           success: false,
@@ -16,10 +18,15 @@ const controller = {
         });
       }
 
+      // Creates the payload of the userId
       const payload = { userId: user.id };
+
+      // Uses this payload to sign a new token
       const token = jwt.sign(payload, process.env.SECRET, {
         expiresIn: "1h",
       });
+
+      // Returns that the user has logged in - and provides them with the token we just created
       res.json({
         success: true,
         message: "Login successful",
@@ -49,6 +56,7 @@ const controller = {
   },
   selfPermission: (req, res, next) => {
     // Checks that the signed in user is the same as the id of the page they are trying to access - Only if they match will they be allowed through.
+    // To be used alongside jwtAuth
     if (req.user.id !== parseInt(req.params.id, 10)) {
       return res.status(403).json({
         success: false,
@@ -59,30 +67,35 @@ const controller = {
   },
   getUser: (req, res, next) => {
     // Authenticates the user and passes that to the next middleware - This is not a security measure!
+    // Carries on even if there is no user
     passport.authenticate("jwt", { session: false }, (err, user, info) => {
       req.user = user || null;
       next();
     })(req, res, next);
   },
   homepage: (req, res, next) => {
+    // Simple bit of json response when requesting homepage - realistically this likely wouldn't request from the back end.
     res.json({
       success: true,
       message: "Welcome!",
     });
   },
   loginPage: (req, res, next) => {
+    // Simple bit of json response when requesting loginpage - realistically this likely wouldn't request from the back end.
     res.json({
       success: true,
       message: "Log In",
     });
   },
   signupPage: (req, res, next) => {
+    // Simple bit of json response when requesting signuppage - realistically this likely wouldn't request from the back end.
     res.json({
       success: true,
       message: "Sign up",
     });
   },
   signupValidation: () => [
+    // Chain of functions from express-validator to validate the sign up form coming in
     body("first_name")
       .trim()
       .notEmpty()
@@ -127,9 +140,12 @@ const controller = {
     }),
   ],
   signupPost: async (req, res, next) => {
-    // console.log("test");
-    console.log(req.body);
+    // Takes the sign up POST request, validates the form, checks if the user already exists, then creates the user
+
+    // Collecting the errors from the validation
     const errors = validationResult(req);
+
+    // Returning these errors so that the sign up form is correctly filled
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
@@ -138,8 +154,10 @@ const controller = {
       });
     }
 
+    // Destructuring the form
     const { first_name, last_name, username, email, password } = req.body;
 
+    // First checking if a user with that username or email exists
     try {
       const checkForDuplicate = await prisma.user.findFirst({
         where: {
@@ -147,6 +165,7 @@ const controller = {
         },
       });
 
+      // If there is a duplicate then returning this to the user
       if (checkForDuplicate) {
         let duplicateField =
           checkForDuplicate.email === req.body.email ? "email" : "username";
@@ -159,8 +178,10 @@ const controller = {
         });
       }
 
+      // Hashing the password for storage
       const hashedPassword = await bcrypt.hash(password, 10);
 
+      // Adding the user to the database
       const newUser = await prisma.user.create({
         data: {
           first_name: first_name,
@@ -171,10 +192,12 @@ const controller = {
         },
       });
 
+      // Signing a token for the user
       const token = jwt.sign({ userId: newUser.id }, process.env.SECRET, {
         expiresIn: "1h",
       });
 
+      // Returning the token to the user
       res.status(201).json({
         success: true,
         message: "Sign Up successful",
@@ -183,6 +206,7 @@ const controller = {
         },
       });
     } catch (err) {
+      // Errors Handler
       res.status(500).json({
         success: false,
         message: "Server says no",
@@ -191,16 +215,19 @@ const controller = {
     }
   },
   userPage: async (req, res, next) => {
+    // This function checks if the requested blog is the same as the person who logged in. Returns relevant info
     const reqProfile = parseInt(req.params.id, 10);
     const currentUser = req.user ? parseInt(req.user.id, 10) : null;
 
     try {
+      // Gets the requested blog posts from the database
       const blogPosts = await prisma.post.findMany({
         where: {
           userId: reqProfile,
         },
       });
 
+      // If the current user is the same as the blog then let the front-end enable them to edit
       if (reqProfile === currentUser) {
         return res.status(200).json({
           success: true,
@@ -217,6 +244,7 @@ const controller = {
           },
         });
       } else if (currentUser) {
+        // If the current user is not the same as the blog then tell the front end who they are but don't let them edit
         return res.status(200).json({
           success: true,
           message: `${req.params.id} Profile - Logged in as ${req.user.username}`,
@@ -232,6 +260,7 @@ const controller = {
           },
         });
       } else {
+        // If they aren't signed in then send them the blog but no user info
         return res.status(200).json({
           success: true,
           message: `${req.params.id} Profile - Not logged in`,
@@ -242,6 +271,7 @@ const controller = {
         });
       }
     } catch (err) {
+      // Error handler
       res.status(500).json({
         success: false,
         message: "Server says no",
