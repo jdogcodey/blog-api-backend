@@ -186,39 +186,66 @@ const controller = {
       res.status(500).json({
         success: false,
         message: "Server says no",
-        errors: { err },
+        errors: err,
       });
     }
   },
   userPage: async (req, res, next) => {
     const reqProfile = parseInt(req.params.id, 10);
-    const currentUser = parseInt(req.user.id, 10) || null;
+    const currentUser = req.user ? parseInt(req.user.id, 10) : null;
 
-    const blogPosts = prisma.post.findMany({
-      where: {
-        userId: reqProfile,
-      },
-    });
-
-    if (reqProfile === currentUser) {
-      return res.status(200).json({
-        success: true,
-        message: `${req.params.id} Profile - Logged in as self - Edit privilege allowed`,
-        data: {
-          user: req.user,
-          editPrivilege: true,
-          blogPosts: blogPosts,
+    try {
+      const blogPosts = await prisma.post.findMany({
+        where: {
+          userId: reqProfile,
         },
       });
-    } else if (currentUser) {
-      return res.status(200).json({
-        success: true,
-        message: `${req.params.id} Profile - Logged in as ${req.user.username}`,
-        data: {
-          user: req.user,
-          editPrivilege: false,
-          blogPosts: blogPosts,
-        },
+
+      if (reqProfile === currentUser) {
+        return res.status(200).json({
+          success: true,
+          message: `${req.params.id} Profile - Logged in as self - Edit privilege allowed`,
+          data: {
+            user: {
+              first_name: req.user.first_name,
+              last_name: req.user.last_name,
+              username: req.user.username,
+              email: req.user.email,
+            },
+            editPrivilege: true,
+            blogPosts: blogPosts,
+          },
+        });
+      } else if (currentUser) {
+        return res.status(200).json({
+          success: true,
+          message: `${req.params.id} Profile - Logged in as ${req.user.username}`,
+          data: {
+            user: {
+              first_name: req.user.first_name,
+              last_name: req.user.last_name,
+              username: req.user.username,
+              email: req.user.email,
+            },
+            editPrivilege: false,
+            blogPosts: blogPosts,
+          },
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          message: `${req.params.id} Profile - Not logged in`,
+          data: {
+            editPrivilege: false,
+            blogPosts: blogPosts,
+          },
+        });
+      }
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: "Server says no",
+        errors: err,
       });
     }
   },
