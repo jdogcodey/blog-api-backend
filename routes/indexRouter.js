@@ -16,4 +16,6 @@ router.post("/user/new", controller.signupValidation(), controller.signupPost);
 
 router.get("/user/:id", controller.getUser, controller.userPage);
 
+router.get("/posts", controller.getUser, controller.posts);
+
 export default router;

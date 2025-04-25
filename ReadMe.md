@@ -38,15 +38,13 @@ Rough ToDo:
 
   /log-in POST (done)
 
-  /user/:profileID: GET
+  /user/:id GET (done)
 
-  /user/:profileID: POST - Test authentication - has to be same user as the profileId
+  /user/:profileId:/edit POST - Needs authentication and userID has to be same as profileId (done)
 
-  /user/:profileId:/edit GET - Needs authentication and userID has to be same as profileId
+  /posts GET - If not logged in, redirects to log-in, if logged in then shows posts (done)
 
-  /posts GET - If not logged in, redirects to log-in, if logged in then shows posts
-
-  /posts/:postId: POST - Creates a particular post, assign user etc.
+  /posts/:postId: POST - Creates a particular post, assign user etc. - Needs to be /posts/new
 
   /posts/:postId: GET - shows a particular post
 

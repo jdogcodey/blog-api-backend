@@ -279,6 +279,39 @@ const controller = {
       });
     }
   },
+  posts: async (req, res, next) => {
+    try {
+      if (req.user) {
+        const blogPosts = await prisma.post.findMany({
+          where: {
+            userId: parseInt(req.user.id, 10),
+          },
+        });
+        res.status(200).json({
+          success: true,
+          message: "Your Posts",
+          data: {
+            user: {
+              first_name: req.user.first_name,
+              last_name: req.user.last_name,
+              username: req.user.username,
+              email: req.user.email,
+            },
+            blogPosts: blogPosts,
+            editPrivilege: true,
+          },
+        });
+      } else {
+        res.redirect("/login");
+      }
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: "Server says no",
+        errors: err,
+      });
+    }
+  },
 };
 
 export default controller;
