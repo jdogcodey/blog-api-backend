@@ -50,6 +50,7 @@ const controller = {
     res.json({
       success: true,
       message: "Logged In",
+      user: req.user,
     });
   },
   homepage: (req, res, next) => {
@@ -178,6 +179,7 @@ const controller = {
       });
     }
   },
+  userPage: (req, res, next) => {},
 };
 
 export default controller;
