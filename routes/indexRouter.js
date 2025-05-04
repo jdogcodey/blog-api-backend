@@ -48,10 +48,17 @@ router.get(
 );
 
 router.put(
-  "/posts/:postId",
-  controller.jwtAuth,
+  "/posts/:postId/:id",
+  controller.selfPermission,
   controller.newPostValidation(),
   controller.putPost
+);
+
+router.delete(
+  "/posts/:postId/:id",
+  controller.selfPermission,
+  controller.getUser,
+  controller.deletePost
 );
 
 export default router;

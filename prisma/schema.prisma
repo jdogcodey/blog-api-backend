@@ -29,7 +29,7 @@ model Post {
   title       String    @db.VarChar(255)
   content     String
   userId      Int
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   pub_date    DateTime  @default(now())
   latest_edit DateTime  @updatedAt
   comments    Comment[]
@@ -39,7 +39,7 @@ model Comment {
   id      Int    @id @default(autoincrement())
   content String
   postId  Int
-  post    Post   @relation(fields: [postId], references: [id])
+  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
   userId  Int
   user    User   @relation(fields: [userId], references: [id])
 }

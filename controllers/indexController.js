@@ -430,7 +430,6 @@ const controller = {
       });
     }
     try {
-      console.log(req.params.postId);
       const postId = parseInt(req.params.postId, 10);
       const userId = parseInt(req.user.id, 10);
       // Fetch the post and check ownership
@@ -478,6 +477,32 @@ const controller = {
         errors: err,
       });
     }
+  },
+  deletePost: async (req, res, next) => {
+    const postId = req.params.postId;
+    const userId = req.user.id;
+    // Fetch the post and check ownership
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+    });
+    if (!post) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Post not found" });
+    }
+    if (post.userId !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "You do not have permission to edit this post",
+      });
+    }
+    // Delete since the owner is the same
+    const deletedPost = await prisma.post.delete({
+      where: {
+        postId: postId,
+      },
+    });
+    res.status(204);
   },
 };
 
