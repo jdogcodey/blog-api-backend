@@ -418,6 +418,67 @@ const controller = {
       });
     }
   },
+  putPost: async (req, res, next) => {
+    // Collecting the errors from the validation
+    const errors = validationResult(req);
+    // Returning these errors so that the put post form is correctly filled
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: "Please fix the highlighted field",
+        errors: errors.array(),
+      });
+    }
+    try {
+      console.log(req.params.postId);
+      const postId = parseInt(req.params.postId, 10);
+      const userId = parseInt(req.user.id, 10);
+      // Fetch the post and check ownership
+      const post = await prisma.post.findUnique({
+        where: { id: postId },
+      });
+      if (!post) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Post not found" });
+      }
+      if (post.userId !== userId) {
+        return res.status(403).json({
+          success: false,
+          message: "You do not have permission to edit this post",
+        });
+      }
+      // Update since user is the owner
+      const updatedPost = await prisma.post.update({
+        where: { id: postId },
+        data: {
+          title: req.body.title,
+          content: req.body.content,
+        },
+      });
+      // Return a success status that the post was added to the database
+      res.status(200).json({
+        success: true,
+        message: "Post updated successfully",
+        data: {
+          blogPosts: [updatedPost],
+          user: {
+            first_name: req.user.first_name,
+            last_name: req.user.last_name,
+            username: req.user.username,
+            email: req.user.email,
+          },
+        },
+      });
+    } catch (err) {
+      // Errors Handler
+      res.status(500).json({
+        success: false,
+        message: "Server says no",
+        errors: err,
+      });
+    }
+  },
 };
 
 export default controller;

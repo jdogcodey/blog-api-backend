@@ -47,4 +47,11 @@ router.get(
   controller.postById
 );
 
+router.put(
+  "/posts/:postId",
+  controller.jwtAuth,
+  controller.newPostValidation(),
+  controller.putPost
+);
+
 export default router;
