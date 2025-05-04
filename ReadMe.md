@@ -44,9 +44,9 @@ Rough ToDo:
 
   /posts GET - If not logged in, redirects to log-in, if logged in then shows posts (done)
 
-  /posts/:postId: POST - Creates a particular post, assign user etc. - Needs to be /posts/new
+  /posts/:postId: POST - Creates a particular post, assign user etc. - Needs to be /posts/new (done)
 
-  /posts/:postId: GET - shows a particular post
+  /posts/:postId: GET - shows a particular post 
 
   /posts/:postId: PUT - Check matching user
 

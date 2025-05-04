@@ -31,4 +31,6 @@ router.post(
   controller.newPost
 );
 
+router.get("/posts/:postId", controller.getUser, controller.postById);
+
 export default router;

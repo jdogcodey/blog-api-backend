@@ -354,11 +354,59 @@ const controller = {
       res.status(201).json({
         success: true,
         message: "Post created",
-        user: {
+        data: {
+          user: {
+            first_name: req.user.first_name,
+            last_name: req.user.last_name,
+            username: req.user.username,
+            email: req.user.email,
+          },
+        },
+      });
+    } catch (err) {
+      // Errors Handler
+      res.status(500).json({
+        success: false,
+        message: "Server says no",
+        errors: err,
+      });
+    }
+  },
+  postById: async (req, res, next) => {
+    try {
+      // Get the post that matches the request
+      const postFromId = await prisma.post.findUnique({
+        where: {
+          id: parseInt(req.params.postId, 10),
+        },
+        include: {
+          user: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      });
+
+      let editPrivilege = false;
+      let user;
+      if (req.user && postFromId.userId === parseInt(req.user.id, 10)) {
+        editPrivilege = true;
+        user = {
           first_name: req.user.first_name,
           last_name: req.user.last_name,
           username: req.user.username,
           email: req.user.email,
+        };
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: `Post ${req.params.postId}`,
+        data: {
+          user: user,
+          editPrivilege: editPrivilege,
+          blogPosts: [postFromId],
         },
       });
     } catch (err) {
