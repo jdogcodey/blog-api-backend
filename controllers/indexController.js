@@ -130,8 +130,7 @@ const controller = {
       .not()
       .isIn(["password", "123456", "qwerty"])
       .withMessage("Password is too common")
-      .trim()
-      .escape(),
+      .trim(),
     body("confirm-password").custom((value, { req }) => {
       if (value !== req.body.password) {
         throw new Error("Password confirmation does not match password");
@@ -308,6 +307,62 @@ const controller = {
       }
     } catch (err) {
       // Error handler
+      res.status(500).json({
+        success: false,
+        message: "Server says no",
+        errors: err,
+      });
+    }
+  },
+  newPostValidation: () => [
+    body("title")
+      .trim()
+      .notEmpty()
+      .withMessage("Posts must have a title")
+      .isLength({ max: 200 })
+      .withMessage("Title Must be under 200 characters"),
+    body("content")
+      .trim()
+      .notEmpty()
+      .withMessage("Content is required")
+      .isLength({ max: 5000 })
+      .withMessage("Content must be under 5000 characters"),
+  ],
+  newPost: async (req, res, next) => {
+    // Collecting the errors from the validation
+    const errors = validationResult(req);
+
+    // Returning these errors so that the new post form is correctly filled
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: "Please fix the highlighted field",
+        errors: errors.array(),
+      });
+    }
+
+    try {
+      // Add the post to the database, along with the relevant user
+      await prisma.post.create({
+        data: {
+          title: req.body.title,
+          content: req.body.content,
+          userId: req.user.id,
+        },
+      });
+      // Return a success status that the post was added to the database
+      res.status(201).json({
+        success: true,
+        message: "Post created",
+        user: {
+          first_name: req.user.first_name,
+          last_name: req.user.last_name,
+          username: req.user.username,
+          email: req.user.email,
+        },
+      });
+    } catch (err) {
+      // Errors Handler
       res.status(500).json({
         success: false,
         message: "Server says no",

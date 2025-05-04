@@ -18,4 +18,17 @@ router.get("/user/:id", controller.getUser, controller.userPage);
 
 router.get("/posts", controller.getUser, controller.posts);
 
+router.post(
+  "/posts/new",
+  // Check if logged in
+  controller.jwtAuth,
+  // Check they filled out the form correctly
+
+  controller.newPostValidation(),
+  // Find out who the user is
+  controller.getUser,
+  // Post to the database
+  controller.newPost
+);
+
 export default router;
