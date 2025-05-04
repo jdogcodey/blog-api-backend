@@ -46,7 +46,7 @@ Rough ToDo:
 
   /posts/:postId: POST - Creates a particular post, assign user etc. - Needs to be /posts/new (done)
 
-  /posts/:postId: GET - shows a particular post 
+  /posts/:postId: GET - shows a particular post (done)
 
   /posts/:postId: PUT - Check matching user
 
