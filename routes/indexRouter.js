@@ -25,10 +25,12 @@ router.post(
   indexController.signupPost
 );
 
+// Shows the user their profile if logged in - otherwise fails
 router.get(
   "/user",
+  // Checks that the user is logged in and sets req.user to them.
   authController.jwtAuth,
-  authController.getUser,
+  // Returns the user info
   indexController.getUser
 );
 
@@ -36,7 +38,7 @@ router.get(
 router.get("/user/:id", authController.getUser, indexController.userPage);
 
 // Shows all of a users own posts
-router.get("/posts", authController.getUser, indexController.posts);
+router.get("/posts", authController.jwtAuth, indexController.posts);
 
 // Posts a new post
 router.post(
@@ -45,8 +47,6 @@ router.post(
   authController.jwtAuth,
   // Check they filled out the form correctly
   validationController.newPost(),
-  // Find out who the user is
-  authController.getUser,
   // Post to the database
   indexController.newPost
 );
@@ -63,7 +63,7 @@ router.get(
 // Checks that a user owns the post, validates their form and then updates their post
 router.put(
   "/posts/:postId",
-  authController.getUser,
+  authController.jwtAuth,
   // Checks the user and the owner of the post are the same
   authController.ownPost,
   // Validates they filled the form out correctly

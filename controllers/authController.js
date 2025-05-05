@@ -32,6 +32,8 @@ const authController = {
     next();
   },
   ownPost: async (req, res, next) => {
+    // Checks that the signed in user owns the post they are trying to access
+    // To be used alongside jwtAuth
     try {
       const postId = parseInt(req.params.postId, 10);
       const userId = parseInt(req.user.id, 10);

@@ -203,31 +203,26 @@ const indexController = {
   },
   posts: async (req, res, next) => {
     try {
-      if (req.user) {
-        // If a User exists then find their blog posts and send back
-        const blogPosts = await prisma.post.findMany({
-          where: {
-            userId: parseInt(req.user.id, 10),
+      // Find blog posts and send back
+      const blogPosts = await prisma.post.findMany({
+        where: {
+          userId: parseInt(req.user.id, 10),
+        },
+      });
+      res.status(200).json({
+        success: true,
+        message: "Your Posts",
+        data: {
+          user: {
+            first_name: req.user.first_name,
+            last_name: req.user.last_name,
+            username: req.user.username,
+            email: req.user.email,
           },
-        });
-        res.status(200).json({
-          success: true,
-          message: "Your Posts",
-          data: {
-            user: {
-              first_name: req.user.first_name,
-              last_name: req.user.last_name,
-              username: req.user.username,
-              email: req.user.email,
-            },
-            blogPosts: blogPosts,
-            editPrivilege: true,
-          },
-        });
-      } else {
-        // If not logged in then redirect to login
-        res.redirect("/login");
-      }
+          blogPosts: blogPosts,
+          editPrivilege: true,
+        },
+      });
     } catch (err) {
       // Error handler
       res.status(500).json({
@@ -395,6 +390,22 @@ const indexController = {
       },
     });
     res.status(204);
+  },
+  getUser: (req, res, next) => {
+    return res.status(200).json({
+      success: true,
+      message: `${req.user.id} Profile - Logged in as self - Edit privilege allowed`,
+      data: {
+        user: {
+          first_name: req.user.first_name,
+          last_name: req.user.last_name,
+          username: req.user.username,
+          email: req.user.email,
+        },
+        editPrivilege: true,
+        blogPosts: blogPosts,
+      },
+    });
   },
 };
 
