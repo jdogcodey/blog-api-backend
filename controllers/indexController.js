@@ -366,29 +366,13 @@ const indexController = {
     }
   },
   deletePost: async (req, res, next) => {
-    const postId = req.params.postId;
-    const userId = req.user.id;
-    // Fetch the post and check ownership
-    const post = await prisma.post.findUnique({
-      where: { id: postId },
-    });
-    if (!post) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Post not found" });
-    }
-    if (post.userId !== userId) {
-      return res.status(403).json({
-        success: false,
-        message: "You do not have permission to delete this post",
-      });
-    }
     // Delete since the owner is the same
     const deletedPost = await prisma.post.delete({
       where: {
         postId: postId,
       },
     });
+    // Only the status needs to be updated and front end can reflect
     res.status(204);
   },
   getUser: (req, res, next) => {

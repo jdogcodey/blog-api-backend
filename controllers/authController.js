@@ -49,7 +49,7 @@ const authController = {
       if (post.userId !== userId) {
         return res.status(403).json({
           success: false,
-          message: "You do not have permission to edit this post",
+          message: "You do not have permission to change this post",
         });
       }
 

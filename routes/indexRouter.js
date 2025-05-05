@@ -38,7 +38,13 @@ router.get(
 router.get("/user/:id", authController.getUser, indexController.userPage);
 
 // Shows all of a users own posts
-router.get("/posts", authController.jwtAuth, indexController.posts);
+router.get(
+  "/posts",
+  // Checks that they are logged in
+  authController.jwtAuth,
+  // Returns all the posts from the user
+  indexController.posts
+);
 
 // Posts a new post
 router.post(
@@ -63,6 +69,7 @@ router.get(
 // Checks that a user owns the post, validates their form and then updates their post
 router.put(
   "/posts/:postId",
+  // Checks they are logged in and updates req.user
   authController.jwtAuth,
   // Checks the user and the owner of the post are the same
   authController.ownPost,
@@ -75,7 +82,8 @@ router.put(
 // Checks that the user owns the post then deletes the post
 router.delete(
   "/posts/:postId/:id",
-  authController.getUser,
+  // Checks they are logged in and updates req.user
+  authController.jwtAuth,
   // Checks the user and the owner of the post are the same
   authController.ownPost,
   // Deletes from the database
