@@ -147,6 +147,13 @@ const indexController = {
         where: {
           userId: reqProfile,
         },
+        include: {
+          user: {
+            select: {
+              username: true,
+            },
+          },
+        },
       });
 
       // If the current user is the same as the blog then let the front-end enable them to edit
@@ -375,21 +382,36 @@ const indexController = {
     // Only the status needs to be updated and front end can reflect
     res.status(204);
   },
-  getUser: (req, res, next) => {
-    return res.status(200).json({
-      success: true,
-      message: `${req.user.id} Profile - Logged in as self - Edit privilege allowed`,
-      data: {
-        user: {
-          first_name: req.user.first_name,
-          last_name: req.user.last_name,
-          username: req.user.username,
-          email: req.user.email,
+  getUser: async (req, res, next) => {
+    try {
+      // Gets the requested blog posts from the database
+      const blogPosts = await prisma.post.findMany({
+        where: {
+          userId: parseInt(req.user.id, 10),
         },
-        editPrivilege: true,
-        blogPosts: blogPosts,
-      },
-    });
+      });
+      return res.status(200).json({
+        success: true,
+        message: `${req.user.id} Profile - Logged in as self - Edit privilege allowed`,
+        data: {
+          user: {
+            first_name: req.user.first_name,
+            last_name: req.user.last_name,
+            username: req.user.username,
+            email: req.user.email,
+          },
+          editPrivilege: true,
+          blogPosts: blogPosts,
+        },
+      });
+    } catch (err) {
+      // Error handler
+      res.status(500).json({
+        success: false,
+        message: "Server says no",
+        errors: err,
+      });
+    }
   },
 };
 

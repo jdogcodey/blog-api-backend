@@ -81,7 +81,7 @@ router.put(
 
 // Checks that the user owns the post then deletes the post
 router.delete(
-  "/posts/:postId/:id",
+  "/posts/:postId",
   // Checks they are logged in and updates req.user
   authController.jwtAuth,
   // Checks the user and the owner of the post are the same
