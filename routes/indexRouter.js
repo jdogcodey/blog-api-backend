@@ -1,64 +1,72 @@
 import express from "express";
 import "dotenv";
-import controller from "../controllers/indexController.js";
+import indexController from "../controllers/indexController.js";
+import validationController from "../controllers/validationControllers.js";
 
 const router = express.Router();
 
 // This probably could be served by the front page alone - unless there needed to be something live on there
-router.get("/", controller.homepage);
+router.get("/", indexController.homepage);
 
 // Ultimately this probably wouldn't make a back end request
-router.get("/login", controller.loginPage);
+router.get("/login", indexController.loginPage);
 
 // Allows a user who is already signed up to login
-router.post("/login", controller.loginPost);
+router.post("/login", indexController.loginPost);
 
 // Ultimately this probably wouldn't make a back end request
-router.get("/signup", controller.signupPage);
+router.get("/signup", indexController.signupPage);
 
 // Validates the users input, then hashes their password and stores them in the db
-router.post("/signup", controller.signupValidation(), controller.signupPost);
+router.post(
+  "/signup",
+  validationController.signup(),
+  indexController.signupPost
+);
+
+router.get("/user", indexController.g);
 
 // Gets the page of a given user - gives an edit privilege to them if they're logged in
-router.get("/user/:id", controller.getUser, controller.userPage);
+router.get("/user/:id", indexController.getUser, indexController.userPage);
 
 // Shows all of a users own posts
-router.get("/posts", controller.getUser, controller.posts);
+router.get("/posts", indexController.getUser, indexController.posts);
 
 // Posts a new post
 router.post(
   "/posts/new",
   // Check if logged in
-  controller.jwtAuth,
+  indexController.jwtAuth,
   // Check they filled out the form correctly
-  controller.newPostValidation(),
+  validationController.newPost(),
   // Find out who the user is
-  controller.getUser,
+  indexController.getUser,
   // Post to the database
-  controller.newPost
+  indexController.newPost
 );
 
 // Gets a post from its ID
 router.get(
   "/posts/:postId",
   // Check who is logged in to give edit privileges
-  controller.getUser,
+  indexController.getUser,
   // Request from db and send to client
-  controller.postById
+  indexController.postById
 );
 
 router.put(
+  // Adding ID to the params as an extra security measure
   "/posts/:postId/:id",
-  controller.selfPermission,
-  controller.newPostValidation(),
-  controller.putPost
+  indexController.selfPermission,
+  validationController.putPost(),
+  indexController.putPost
 );
 
 router.delete(
   "/posts/:postId/:id",
-  controller.selfPermission,
-  controller.getUser,
-  controller.deletePost
+  indexController.selfPermission,
+  indexController.getUser,
+  indexController.deletePost
 );
 
 export default router;

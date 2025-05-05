@@ -5,7 +5,7 @@ import { body, validationResult, check } from "express-validator";
 import "dotenv";
 import prisma from "../config/prisma-client.js";
 
-const controller = {
+const indexController = {
   loginPost: (req, res, next) => {
     // Takes in the username and password submitted, authenticates them, and provides the user with a jwt
     passport.authenticate("local", { session: false }, (err, user, info) => {
@@ -94,50 +94,6 @@ const controller = {
       message: "Sign up",
     });
   },
-  signupValidation: () => [
-    // Chain of functions from express-validator to validate the sign up form coming in
-    body("first_name")
-      .trim()
-      .notEmpty()
-      .withMessage("First name is required")
-      .isAlpha()
-      .withMessage("First name must only contain letters"),
-    body("last_name")
-      .trim()
-      .notEmpty()
-      .withMessage("Last name is required")
-      .isAlpha()
-      .withMessage("Last name must only contain letters"),
-    body("username").trim().notEmpty().withMessage("Username is required"),
-    body("email")
-      .trim()
-      .isEmail()
-      .withMessage("Must be a valid email")
-      .normalizeEmail(),
-    body("password")
-      .isLength({ min: 8 })
-      .withMessage("Password must be at least 8 characters long")
-      .matches(/[A-Z]/)
-      .withMessage("Password must contain at least one uppercase letter")
-      .matches(/[a-z]/)
-      .withMessage("Password must contain at least one lowercase letter")
-      .matches(/[0-9]/)
-      .withMessage("Password must contain at least one number")
-      .matches(/[@$!%*?&]/)
-      .withMessage(
-        "Password must contain at least one special character (@$!%*?&)"
-      )
-      .not()
-      .isIn(["password", "123456", "qwerty"])
-      .withMessage("Password is too common")
-      .trim(),
-    body("confirm-password").custom((value, { req }) => {
-      if (value !== req.body.password) {
-        throw new Error("Password confirmation does not match password");
-      }
-      return true;
-    }),
-  ],
   signupPost: async (req, res, next) => {
     // Takes the sign up POST request, validates the form, checks if the user already exists, then creates the user
 
@@ -314,20 +270,6 @@ const controller = {
       });
     }
   },
-  newPostValidation: () => [
-    body("title")
-      .trim()
-      .notEmpty()
-      .withMessage("Posts must have a title")
-      .isLength({ max: 200 })
-      .withMessage("Title Must be under 200 characters"),
-    body("content")
-      .trim()
-      .notEmpty()
-      .withMessage("Content is required")
-      .isLength({ max: 5000 })
-      .withMessage("Content must be under 5000 characters"),
-  ],
   newPost: async (req, res, next) => {
     // Collecting the errors from the validation
     const errors = validationResult(req);
@@ -493,7 +435,7 @@ const controller = {
     if (post.userId !== userId) {
       return res.status(403).json({
         success: false,
-        message: "You do not have permission to edit this post",
+        message: "You do not have permission to delete this post",
       });
     }
     // Delete since the owner is the same
@@ -506,4 +448,4 @@ const controller = {
   },
 };
 
-export default controller;
+export default indexController;
