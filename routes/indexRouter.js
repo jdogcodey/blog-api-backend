@@ -2,6 +2,7 @@ import express from "express";
 import "dotenv";
 import indexController from "../controllers/indexController.js";
 import validationController from "../controllers/validationControllers.js";
+import authController from "../controllers/authController.js";
 
 const router = express.Router();
 
@@ -24,23 +25,28 @@ router.post(
   indexController.signupPost
 );
 
-router.get("/user", indexController.g);
+router.get(
+  "/user",
+  authController.jwtAuth,
+  authController.getUser,
+  indexController.getUser
+);
 
 // Gets the page of a given user - gives an edit privilege to them if they're logged in
-router.get("/user/:id", indexController.getUser, indexController.userPage);
+router.get("/user/:id", authController.getUser, indexController.userPage);
 
 // Shows all of a users own posts
-router.get("/posts", indexController.getUser, indexController.posts);
+router.get("/posts", authController.getUser, indexController.posts);
 
 // Posts a new post
 router.post(
   "/posts/new",
   // Check if logged in
-  indexController.jwtAuth,
+  authController.jwtAuth,
   // Check they filled out the form correctly
   validationController.newPost(),
   // Find out who the user is
-  indexController.getUser,
+  authController.getUser,
   // Post to the database
   indexController.newPost
 );
@@ -49,23 +55,30 @@ router.post(
 router.get(
   "/posts/:postId",
   // Check who is logged in to give edit privileges
-  indexController.getUser,
+  authController.getUser,
   // Request from db and send to client
   indexController.postById
 );
 
+// Checks that a user owns the post, validates their form and then updates their post
 router.put(
-  // Adding ID to the params as an extra security measure
-  "/posts/:postId/:id",
-  indexController.selfPermission,
+  "/posts/:postId",
+  authController.getUser,
+  // Checks the user and the owner of the post are the same
+  authController.ownPost,
+  // Validates they filled the form out correctly
   validationController.putPost(),
+  // Updates the database
   indexController.putPost
 );
 
+// Checks that the user owns the post then deletes the post
 router.delete(
   "/posts/:postId/:id",
-  indexController.selfPermission,
-  indexController.getUser,
+  authController.getUser,
+  // Checks the user and the owner of the post are the same
+  authController.ownPost,
+  // Deletes from the database
   indexController.deletePost
 );
 

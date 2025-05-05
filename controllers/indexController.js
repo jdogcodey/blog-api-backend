@@ -40,39 +40,6 @@ const indexController = {
       });
     })(req, res, next);
   },
-  jwtAuth: (req, res, next) => {
-    // Checks that the user is signed in - anyone logged in will be let past.
-    passport.authenticate("jwt", { session: false }, (err, user, info) => {
-      if (err || !user) {
-        return res.status(401).json({
-          success: false,
-          message: "Not logged in",
-          errors: err || info,
-        });
-      }
-      req.user = user;
-      next();
-    })(req, res, next);
-  },
-  selfPermission: (req, res, next) => {
-    // Checks that the signed in user is the same as the id of the page they are trying to access - Only if they match will they be allowed through.
-    // To be used alongside jwtAuth
-    if (req.user.id !== parseInt(req.params.id, 10)) {
-      return res.status(403).json({
-        success: false,
-        message: "Access Denied",
-      });
-    }
-    next();
-  },
-  getUser: (req, res, next) => {
-    // Authenticates the user and passes that to the next middleware - This is not a security measure!
-    // Carries on even if there is no user
-    passport.authenticate("jwt", { session: false }, (err, user, info) => {
-      req.user = user || null;
-      next();
-    })(req, res, next);
-  },
   homepage: (req, res, next) => {
     // Simple bit of json response when requesting homepage - realistically this likely wouldn't request from the back end.
     res.json({
@@ -372,23 +339,6 @@ const indexController = {
       });
     }
     try {
-      const postId = parseInt(req.params.postId, 10);
-      const userId = parseInt(req.user.id, 10);
-      // Fetch the post and check ownership
-      const post = await prisma.post.findUnique({
-        where: { id: postId },
-      });
-      if (!post) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Post not found" });
-      }
-      if (post.userId !== userId) {
-        return res.status(403).json({
-          success: false,
-          message: "You do not have permission to edit this post",
-        });
-      }
       // Update since user is the owner
       const updatedPost = await prisma.post.update({
         where: { id: postId },
