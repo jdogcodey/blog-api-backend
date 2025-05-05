@@ -75,7 +75,7 @@ const validationController = {
       .isString()
       .withMessage("Must be a String")
       .isLength({ max: 200 })
-      .withMessage("Title Must be under 200 characters").optional,
+      .withMessage("Title Must be under 200 characters"),
     body("content")
       .optional()
       .trim()

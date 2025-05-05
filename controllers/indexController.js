@@ -254,7 +254,7 @@ const indexController = {
 
     try {
       // Add the post to the database, along with the relevant user
-      await prisma.post.create({
+      const newPost = await prisma.post.create({
         data: {
           title: req.body.title,
           content: req.body.content,
@@ -272,6 +272,7 @@ const indexController = {
             username: req.user.username,
             email: req.user.email,
           },
+          blogPosts: [newPost],
         },
       });
     } catch (err) {
@@ -341,16 +342,18 @@ const indexController = {
       });
     }
     try {
+      const newTitle = req.body.title ?? req.post.title;
+      const newContent = req.body.content ?? req.post.content;
       // Update since user is the owner
       const updatedPost = await prisma.post.update({
-        where: { id: postId },
+        where: { id: parseInt(req.params.postId, 10) },
         data: {
-          title: req.body.title,
-          content: req.body.content,
+          title: newTitle,
+          content: newContent,
         },
       });
       // Return a success status that the post was added to the database
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "Post updated successfully",
         data: {
@@ -373,14 +376,25 @@ const indexController = {
     }
   },
   deletePost: async (req, res, next) => {
-    // Delete since the owner is the same
-    const deletedPost = await prisma.post.delete({
-      where: {
-        postId: postId,
-      },
-    });
-    // Only the status needs to be updated and front end can reflect
-    res.status(204);
+    try {
+      // Delete since the owner is the same
+      const deletedPost = await prisma.post.delete({
+        where: {
+          id: parseInt(req.params.postId),
+        },
+      });
+      return res.status(204).json({
+        success: true,
+        message: "Successfully deleted",
+      });
+    } catch (err) {
+      // Errors Handler
+      res.status(500).json({
+        success: false,
+        message: "Server says no",
+        errors: err,
+      });
+    }
   },
   getUser: async (req, res, next) => {
     try {
