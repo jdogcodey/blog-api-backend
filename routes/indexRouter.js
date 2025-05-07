@@ -90,4 +90,11 @@ router.delete(
   indexController.deletePost
 );
 
+router.post(
+  "/posts/:postId/comments/new",
+  authController.jwtAuth,
+  validationController.newComment,
+  indexController.newComment
+);
+
 export default router;

@@ -1,9 +1,5 @@
-import jwt from "jsonwebtoken";
-import passport from "passport";
-import bcrypt from "bcryptjs";
-import { body, validationResult, check } from "express-validator";
+import { body } from "express-validator";
 import "dotenv";
-import prisma from "../config/prisma-client.js";
 
 const validationController = {
   signup: () => [
@@ -58,7 +54,7 @@ const validationController = {
       .isString()
       .withMessage("Must be a String")
       .isLength({ max: 200 })
-      .withMessage("Title Must be under 200 characters"),
+      .withMessage("Title must be under 200 characters"),
     body("content")
       .trim()
       .notEmpty()
@@ -90,6 +86,16 @@ const validationController = {
       return true;
     }),
   ],
+  newComment: () => {
+    body("content")
+      .trim()
+      .notEmpty()
+      .withMessage("No comment")
+      .isString()
+      .withMessage("Must be a String")
+      .isLength({ max: 200 })
+      .withMessage("Comments must be under 200 characters");
+  },
 };
 
 export default validationController;

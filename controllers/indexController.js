@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import passport from "passport";
 import bcrypt from "bcryptjs";
-import { body, validationResult, check } from "express-validator";
 import "dotenv";
 import prisma from "../config/prisma-client.js";
 
@@ -420,6 +419,49 @@ const indexController = {
       });
     } catch (err) {
       // Error handler
+      res.status(500).json({
+        success: false,
+        message: "Server says no",
+        errors: err,
+      });
+    }
+  },
+  newComment: async (req, res, next) => {
+    const errors = validationResult(req);
+
+    // Returning these errors so that the new post form is correctly filled
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: "Please fix the highlighted field",
+        errors: errors.array(),
+      });
+    }
+
+    try {
+      const newComment = await prisma.comment.create({
+        data: {
+          content: req.body.content,
+          postId: req.params.postId,
+          userId: req.user.id,
+        },
+      });
+
+      res.status(201).json({
+        success: true,
+        message: "Comment created",
+        data: {
+          user: {
+            first_name: req.user.first_name,
+            last_name: req.user.last_name,
+            username: req.user.username,
+            email: req.user.email,
+          },
+          comments: [newComment],
+        },
+      });
+    } catch {
+      // Errors Handler
       res.status(500).json({
         success: false,
         message: "Server says no",
