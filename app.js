@@ -6,6 +6,7 @@ import passport from "passport";
 import "dotenv/config";
 import routes from "./routes/indexRouter.js";
 import "./config/passport.js";
+import cors from "cors";
 
 // Defining the PORT from the .env file
 const PORT = process.env.PORT || 3000;
@@ -16,6 +17,13 @@ const __dirname = path.dirname(__filename);
 
 // Creating the express app
 const app = express();
+
+//Allowing cross-site access
+app.use(
+  cors({
+    origin: `http://localhost:5173`,
+  })
+);
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
