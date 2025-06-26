@@ -3,6 +3,7 @@ import passport from "passport";
 import bcrypt from "bcryptjs";
 import "dotenv";
 import prisma from "../config/prisma-client.js";
+import { validationResult } from "express-validator";
 
 const indexController = {
   loginPost: (req, res, next) => {
