@@ -91,7 +91,7 @@ const indexController = {
       if (checkForDuplicate) {
         let duplicateField =
           checkForDuplicate.email === req.body.email ? "email" : "username";
-        return res.status(400).json({
+        return res.status(409).json({
           success: false,
           message: `An account already exists with those details`,
           errors: {
