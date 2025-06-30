@@ -114,6 +114,8 @@ const indexController = {
         },
       });
 
+      const { password, ...userWithoutPassword } = newUser;
+
       // Signing a token for the user
       const token = jwt.sign({ userId: newUser.id }, process.env.SECRET, {
         expiresIn: "1h",
@@ -125,6 +127,7 @@ const indexController = {
         message: "Sign Up successful",
         data: {
           token: token,
+          user: userWithoutPassword,
         },
       });
     } catch (err) {
