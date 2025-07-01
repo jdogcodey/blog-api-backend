@@ -65,19 +65,28 @@ const indexController = {
     // Takes the sign up POST request, validates the form, checks if the user already exists, then creates the user
 
     // Collecting the errors from the validation
-    const errors = validationResult(req);
+    const errors = validationResult(req).array();
 
     // Returning these errors so that the sign up form is correctly filled
-    if (!errors.isEmpty()) {
+    if (errors.length > 0) {
       return res.status(400).json({
         success: false,
         message: "Please fix the highlighted field",
-        errors: errors.array(),
+        errors: errors,
       });
     }
 
     // Destructuring the form
-    const { first_name, last_name, username, email, password } = req.body;
+    const {
+      first_name,
+      last_name,
+      username,
+      email,
+      password,
+      confirm_password,
+    } = req.body;
+
+    console.log(req.body);
 
     // First checking if a user with that username or email exists
     try {
@@ -114,7 +123,7 @@ const indexController = {
         },
       });
 
-      const { password, ...userWithoutPassword } = newUser;
+      const { password: _password, ...userWithoutPassword } = newUser;
 
       // Signing a token for the user
       const token = jwt.sign({ userId: newUser.id }, process.env.SECRET, {
@@ -132,6 +141,7 @@ const indexController = {
       });
     } catch (err) {
       // Errors Handler
+      console.error(err);
       res.status(500).json({
         success: false,
         message: "Server says no",
