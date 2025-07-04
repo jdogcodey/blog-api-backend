@@ -7,6 +7,18 @@ import { validationResult } from "express-validator";
 
 const indexController = {
   loginPost: (req, res, next) => {
+    // Collecting the errors from the validation
+    const errors = validationResult(req).array();
+
+    // Returning these errors so that the login form is correctly filled
+    if (errors.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Please fix the highlighted field",
+        errors: errors,
+      });
+    }
+
     // Takes in the username and password submitted, authenticates them, and provides the user with a jwt
     passport.authenticate("local", { session: false }, (err, user, info) => {
       // Handles an error or no user
@@ -14,7 +26,7 @@ const indexController = {
         return res.status(401).json({
           success: false,
           message: "Invalid credentials",
-          errors: err || info,
+          errors: err || errors,
         });
       }
 
@@ -27,7 +39,7 @@ const indexController = {
       });
 
       // Returns that the user has logged in - and provides them with the token we just created
-      res.json({
+      res.status(200).json({
         success: true,
         message: "Login successful",
         data: {
@@ -35,6 +47,8 @@ const indexController = {
           user: {
             username: user.username,
             email: user.email,
+            first_name: user.first_name,
+            last_name: user.last_name,
           },
         },
       });
