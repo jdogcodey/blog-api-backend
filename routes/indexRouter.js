@@ -13,7 +13,7 @@ router.get("/", indexController.homepage);
 router.get("/login", indexController.loginPage);
 
 // Allows a user who is already signed up to login
-router.post("/login", indexController.loginPost);
+router.post("/login", validationController.login(), indexController.loginPost);
 
 // Ultimately this probably wouldn't make a back end request
 router.get("/signup", indexController.signupPage);
