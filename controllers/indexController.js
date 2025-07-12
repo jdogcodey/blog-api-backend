@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import "dotenv";
 import prisma from "../config/prisma-client.js";
 import { validationResult } from "express-validator";
+import { dmmfToRuntimeDataModel } from "@prisma/client/runtime/library";
 
 const indexController = {
   loginPost: (req, res, next) => {
@@ -253,7 +254,14 @@ const indexController = {
         include: {
           comments: {
             include: {
-              user: true,
+              user: {
+                select: {
+                  first_name: true,
+                  last_name: true,
+                  username: true,
+                  email: true,
+                },
+              },
             },
           },
         },
@@ -526,11 +534,13 @@ const indexController = {
   getUser: (req, res) => {
     res.status(200).json({
       success: true,
-      user: {
-        first_name: req.user.first_name,
-        last_name: req.user.last_name,
-        username: req.user.username,
-        email: req.user.email,
+      data: {
+        user: {
+          first_name: req.user.first_name,
+          last_name: req.user.last_name,
+          username: req.user.username,
+          email: req.user.email,
+        },
       },
     });
   },
