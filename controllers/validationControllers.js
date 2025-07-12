@@ -90,7 +90,7 @@ const validationController = {
       return true;
     }),
   ],
-  newComment: () => {
+  newComment: () => [
     body("content")
       .trim()
       .notEmpty()
@@ -98,8 +98,8 @@ const validationController = {
       .isString()
       .withMessage("Must be a String")
       .isLength({ max: 200 })
-      .withMessage("Comments must be under 200 characters");
-  },
+      .withMessage("Comments must be under 200 characters"),
+  ],
 };
 
 export default validationController;

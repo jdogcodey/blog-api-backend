@@ -93,7 +93,7 @@ router.delete(
 router.post(
   "/posts/:postId/comments/new",
   authController.jwtAuth,
-  validationController.newComment,
+  validationController.newComment(),
   indexController.newComment
 );
 

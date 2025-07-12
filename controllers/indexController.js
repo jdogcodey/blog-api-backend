@@ -191,6 +191,7 @@ const indexController = {
       // If the current user is the same as the blog then let the front-end enable them to edit
       // Looking at this now it's a lot of repeated code and could be written in one return with a variable for the edit privileges - added to do
       if (reqProfile === currentUser) {
+        const editPrivilege = true;
         return res.status(200).json({
           success: true,
           message: `${req.params.id} Profile - Logged in as self - Edit privilege allowed`,
@@ -206,6 +207,7 @@ const indexController = {
           },
         });
       } else if (currentUser) {
+        const editPrivilege = false;
         // If the current user is not the same as the blog then tell the front end who they are but don't let them edit
         return res.status(200).json({
           success: true,
@@ -247,6 +249,13 @@ const indexController = {
       const blogPosts = await prisma.post.findMany({
         where: {
           userId: parseInt(req.user.id, 10),
+        },
+        include: {
+          comments: {
+            include: {
+              user: true,
+            },
+          },
         },
       });
       res.status(200).json({
@@ -436,6 +445,17 @@ const indexController = {
         where: {
           userId: parseInt(req.user.id, 10),
         },
+        include: {
+          comments: {
+            include: {
+              user: {
+                select: {
+                  username: true,
+                },
+              },
+            },
+          },
+        },
       });
       return res.status(200).json({
         success: true,
@@ -461,8 +481,8 @@ const indexController = {
     }
   },
   newComment: async (req, res, next) => {
+    // console.log("test");
     const errors = validationResult(req);
-
     // Returning these errors so that the new post form is correctly filled
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -476,7 +496,7 @@ const indexController = {
       const newComment = await prisma.comment.create({
         data: {
           content: req.body.content,
-          postId: req.params.postId,
+          postId: parseInt(req.params.postId),
           userId: req.user.id,
         },
       });
@@ -494,7 +514,7 @@ const indexController = {
           comments: [newComment],
         },
       });
-    } catch {
+    } catch (err) {
       // Errors Handler
       res.status(500).json({
         success: false,
