@@ -175,6 +175,11 @@ const indexController = {
           userId: reqProfile,
         },
         include: {
+          comments: {
+            include: {
+              user: true,
+            },
+          },
           user: {
             select: {
               username: true,
@@ -184,6 +189,7 @@ const indexController = {
       });
 
       // If the current user is the same as the blog then let the front-end enable them to edit
+      // Looking at this now it's a lot of repeated code and could be written in one return with a variable for the edit privileges - added to do
       if (reqProfile === currentUser) {
         return res.status(200).json({
           success: true,

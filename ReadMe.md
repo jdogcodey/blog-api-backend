@@ -8,46 +8,4 @@ Aims for this project:
 
 Rough ToDo:
 
-  Plan the Prisma models (done)
-
-  Set up the directory and git (done)
-
-  Install the relevant dependencies and establish the file structure (done)
-
-  Set up prisma models, separately the psql db and connect the two (done)
-
-  Test storing data to the db
-
-  Set up express app (done)
-
-  Add Router and set up initial route (done)
-
-  Add Controller and add initial controller (done)
-
-  Test app running and set up correctly (done)
-
-  / route shows homepage (done)
-
-  Set up JWT authentication (done)
-
-  Create /user/new GET (as /signup)
-
-  /user/new POST (done)
-
-  /log-in GET (done)
-
-  /log-in POST (done)
-
-  /user/:id GET (done)
-
-  /user/:profileId:/edit POST - Needs authentication and userID has to be same as profileId (done)
-
-  /posts GET - If not logged in, redirects to log-in, if logged in then shows posts (done)
-
-  /posts/:postId: POST - Creates a particular post, assign user etc. - Needs to be /posts/new (done)
-
-  /posts/:postId: GET - shows a particular post (done)
-
-  /posts/:postId: PUT - Check matching user
-
-  /posts/:postId:/:commentId: POST - Adds comment to the post and redirects to the GET for post
+  Index Controller - 192
