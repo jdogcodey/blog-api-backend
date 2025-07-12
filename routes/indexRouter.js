@@ -25,13 +25,16 @@ router.post(
   indexController.signupPost
 );
 
+// Logs the user in if they have a token
+router.get("/auth/verify", authController.jwtAuth, indexController.getUser);
+
 // Shows the user their profile if logged in - otherwise fails
 router.get(
   "/user",
   // Checks that the user is logged in and sets req.user to them.
   authController.jwtAuth,
   // Returns the user info
-  indexController.getUser
+  indexController.getProfile
 );
 
 // Gets the page of a given user - gives an edit privilege to them if they're logged in

@@ -438,7 +438,7 @@ const indexController = {
       });
     }
   },
-  getUser: async (req, res, next) => {
+  getProfile: async (req, res, next) => {
     try {
       // Gets the requested blog posts from the database
       const blogPosts = await prisma.post.findMany({
@@ -522,6 +522,17 @@ const indexController = {
         errors: err,
       });
     }
+  },
+  getUser: (req, res) => {
+    res.status(200).json({
+      success: true,
+      user: {
+        first_name: req.user.first_name,
+        last_name: req.user.last_name,
+        username: req.user.username,
+        email: req.user.email,
+      },
+    });
   },
 };
 
