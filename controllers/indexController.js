@@ -190,9 +190,7 @@ const indexController = {
       });
 
       // If the current user is the same as the blog then let the front-end enable them to edit
-      // Looking at this now it's a lot of repeated code and could be written in one return with a variable for the edit privileges - added to do
       if (reqProfile === currentUser) {
-        const editPrivilege = true;
         return res.status(200).json({
           success: true,
           message: `${req.params.id} Profile - Logged in as self - Edit privilege allowed`,
